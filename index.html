@@ -540,94 +540,112 @@ input.value = serial;
   showLoading();
 
 
-  const callbackName =
-    'tkmCallback_' + Date.now();
+    const callbackName =
+      'tkmCallback_' + Date.now();
 
+    let retryCount = 0;
+    const maxRetries = 1;
 
-  window[callbackName] =
-    function(data) {
+    function cleanupScript() {
+      const oldScript =
+        document.getElementById('tkmApiScript');
 
-      resetButton();
-
-
-      if (
-        data &&
-        data.success === true
-      ) {
-
-        showSuccess(data);
-
-      } else {
-
-        showError(
-          data
-            ? data.message
-            : 'NOT_FOUND'
-        );
+      if (oldScript) {
+        oldScript.remove();
       }
+    }
 
+    function requestVerification() {
 
-      delete window[callbackName];
+      cleanupScript();
 
+      window[callbackName] =
+        function(data) {
+
+          resetButton();
+
+          if (
+            data &&
+            data.success === true
+          ) {
+
+            showSuccess(data);
+
+          } else {
+
+            showError(
+              data
+                ? data.message
+                : 'NOT_FOUND'
+            );
+          }
+
+          delete window[callbackName];
+          cleanupScript();
+        };
 
       const script =
-        document.getElementById(
-          'tkmApiScript'
-        );
+        document.createElement('script');
 
-      if (script) {
-        script.remove();
-      }
-    };
+      script.id =
+        'tkmApiScript';
 
+      script.async = true;
 
-  const script =
-    document.createElement('script');
+      script.src =
+        API_URL +
+        '?serial=' +
+        encodeURIComponent(serial) +
+        '&callback=' +
+        encodeURIComponent(callbackName) +
+        '&_=' +
+        Date.now();
 
+      script.onerror =
+        function() {
 
-  script.id =
-    'tkmApiScript';
+          cleanupScript();
 
+          if (retryCount < maxRetries) {
 
-  script.src =
-    API_URL +
-    '?serial=' +
-    encodeURIComponent(serial) +
-    '&callback=' +
-    encodeURIComponent(callbackName);
+            retryCount++;
 
+            setTimeout(
+              requestVerification,
+              500
+            );
 
-  script.onerror =
-    function() {
+            return;
+          }
 
-      resetButton();
+          resetButton();
 
-      result.style.display =
-        'block';
+          result.style.display =
+            'block';
 
-      result.innerHTML = `
+          result.innerHTML = `
+            <div class="error-card">
 
-        <div class="error-card">
+              <div class="error-title">
+                CONNECTION ERROR
+              </div>
 
-          <div class="error-title">
-            CONNECTION ERROR
-          </div>
+              <div class="error-text">
+                인증 서버에 연결할 수 없습니다.
+                <br>
+                잠시 후 다시 시도해 주세요.
+              </div>
 
-          <div class="error-text">
-            인증 서버에 연결할 수 없습니다.
-            <br>
-            잠시 후 다시 시도해 주세요.
-          </div>
+            </div>
+          `;
 
-        </div>
+          delete window[callbackName];
+        };
 
-      `;
+      document.body.appendChild(script);
+    }
 
-      delete window[callbackName];
-    };
-
-
-  document.body.appendChild(script);
+    requestVerification();
 }
 
 
