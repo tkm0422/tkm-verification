@@ -3,58 +3,653 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>TKM Product Verification</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #080808;
+      color: #ffffff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 70px 20px 90px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .logo {
+      color: #e60012;
+      font-size: 64px;
+      line-height: 0.95;
+      font-weight: 800;
+      font-style: italic;
+      letter-spacing: -5px;
+    }
+
+    .global {
+      margin-top: 10px;
+      padding-left: 9px;
+      font-size: 16px;
+      letter-spacing: 9px;
+    }
+
+    .title {
+      margin-top: 52px;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 4px;
+    }
+
+    .subtitle {
+      max-width: 430px;
+      margin: 14px auto 40px;
+      color: #999999;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .form {
+      text-align: left;
+    }
+
+    .form label {
+      display: block;
+      margin-bottom: 10px;
+      color: #bcbcbc;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+    }
+
+    #serialInput {
+      width: 100%;
+      height: 58px;
+      padding: 0 18px;
+
+      border: 1px solid #343434;
+      background: #111111;
+      color: #ffffff;
+
+      font-size: 16px;
+      letter-spacing: 1px;
+      outline: none;
+    }
+
+    #serialInput:focus {
+      border-color: #e60012;
+    }
+
+    #verifyButton {
+      width: 100%;
+      height: 56px;
+      margin-top: 14px;
+
+      border: 0;
+      background: #e60012;
+      color: #ffffff;
+
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+
+      cursor: pointer;
+    }
+
+    #verifyButton:disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    #result {
+      display: none;
+      margin-top: 36px;
+    }
+
+    .result-card {
+      padding: 34px 28px;
+      border: 1px solid #292929;
+      background: #111111;
+      text-align: left;
+    }
+
+    .result-status {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .check {
+      width: 50px;
+      height: 50px;
+      margin: 0 auto 16px;
+
+      border: 2px solid #e60012;
+      border-radius: 50%;
+
+      color: #e60012;
+      font-size: 25px;
+      line-height: 46px;
+    }
+
+    .result-title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 3px;
+    }
+
+    .result-ko {
+      margin-top: 8px;
+      color: #aaaaaa;
+      font-size: 13px;
+    }
+
+    .grid {
+      border-top: 1px solid #292929;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 145px 1fr;
+      gap: 15px;
+
+      padding: 14px 0;
+      border-bottom: 1px solid #202020;
+    }
+
+    .label {
+      color: #777777;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+    }
+
+    .value {
+      color: #ffffff;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .footer {
+      margin-top: 26px;
+      color: #777777;
+      font-size: 11px;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    .error-card {
+      padding: 34px 28px;
+      border: 1px solid #352323;
+      background: #111111;
+      text-align: center;
+    }
+
+    .error-symbol {
+      margin-bottom: 15px;
+      color: #e60012;
+      font-size: 30px;
+    }
+
+    .error-title {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 2px;
+    }
+
+    .error-text {
+      margin-top: 12px;
+      color: #999999;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .note {
+      margin-top: 34px;
+      color: #555555;
+      font-size: 10px;
+      line-height: 1.7;
+      letter-spacing: 0.8px;
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 50px 18px 70px;
+      }
+
+      .logo {
+        font-size: 52px;
+      }
+
+      .global {
+        font-size: 14px;
+        letter-spacing: 7px;
+      }
+
+      .title {
+        font-size: 18px;
+        letter-spacing: 3px;
+      }
+
+      .subtitle {
+        font-size: 13px;
+      }
+
+      .row {
+        grid-template-columns: 118px 1fr;
+      }
+    }
+  </style>
 </head>
 
-<body style="
-  margin:0;
-  background:#080808;
-  color:white;
-  font-family:Arial, sans-serif;
-">
+<body>
 
-  <div style="
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-  ">
+<div class="page">
+  <div class="container">
 
-    <div>
-      <div style="
-        color:#e60012;
-        font-size:60px;
-        font-weight:800;
-      ">
-        TKM
-      </div>
+    <div class="logo">TKM</div>
+    <div class="global">GLOBAL</div>
 
-      <div style="
-        margin-top:8px;
-        letter-spacing:8px;
-      ">
-        GLOBAL
-      </div>
+    <div class="title">
+      PRODUCT VERIFICATION
+    </div>
 
-      <div style="
-        margin-top:50px;
-        font-size:18px;
-        letter-spacing:3px;
-      ">
-        PRODUCT VERIFICATION
-      </div>
+    <div class="subtitle">
+      TKM Inc.를 통해 공식 유통되는 제품을 확인할 수 있습니다.
+    </div>
 
-      <div style="
-        margin-top:15px;
-        color:#888;
-        font-size:13px;
-      ">
-        Verification system test
-      </div>
+    <div class="form">
+      <label for="serialInput">
+        SERIAL NUMBER
+      </label>
+
+      <input
+        id="serialInput"
+        type="text"
+        placeholder="GRL-26-000001"
+        autocomplete="off"
+      >
+
+      <button id="verifyButton">
+        VERIFY
+      </button>
+    </div>
+
+    <div id="result"></div>
+
+    <div class="note">
+      Each officially distributed product is managed with a unique serial number.
     </div>
 
   </div>
+</div>
+
+
+<script>
+
+const API_URL =
+'https://script.google.com/macros/s/AKfycbxMiszb7rqm-usRmIBuKD3gkIdqUnf71xUcm5Jd0NYyxpTxXhY7ipC1w6Di-DdaNmXmmQ/exec';
+
+
+const input =
+document.getElementById('serialInput');
+
+const button =
+document.getElementById('verifyButton');
+
+const result =
+document.getElementById('result');
+
+
+function normalizeSerial(value) {
+  return String(value || '')
+    .trim()
+    .toUpperCase();
+}
+
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+
+function showLoading() {
+
+  button.disabled = true;
+  button.textContent = 'VERIFYING...';
+
+  result.style.display = 'block';
+
+  result.innerHTML = `
+    <div class="result-card" style="text-align:center;">
+      <div style="
+        color:#888;
+        font-size:12px;
+        letter-spacing:2px;
+      ">
+        VERIFYING PRODUCT...
+      </div>
+    </div>
+  `;
+}
+
+
+function resetButton() {
+
+  button.disabled = false;
+  button.textContent = 'VERIFY';
+}
+
+
+function showSuccess(data) {
+
+  result.style.display = 'block';
+
+  result.innerHTML = `
+
+    <div class="result-card">
+
+      <div class="result-status">
+
+        <div class="check">
+          ✓
+        </div>
+
+        <div class="result-title">
+          VERIFIED PRODUCT
+        </div>
+
+        <div class="result-ko">
+          TKM 공식 유통 제품입니다.
+        </div>
+
+      </div>
+
+
+      <div class="grid">
+
+        <div class="row">
+          <div class="label">BRAND</div>
+          <div class="value">
+            ${escapeHtml(data.brand)}
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="label">PRODUCT</div>
+          <div class="value">
+            ${escapeHtml(data.product)}
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="label">MODEL</div>
+          <div class="value">
+            ${escapeHtml(data.model || '-')}
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="label">
+            SERIAL NUMBER
+          </div>
+
+          <div class="value">
+            ${escapeHtml(data.serial)}
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="label">
+            COUNTRY OF ORIGIN
+          </div>
+
+          <div class="value">
+            ${escapeHtml(data.origin)}
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="label">
+            DISTRIBUTOR
+          </div>
+
+          <div class="value">
+            TKM Inc.
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="footer">
+
+        This product is registered in the
+        TKM official distribution system.
+
+        <br>
+
+        TKM GLOBAL · SEOUL
+
+      </div>
+
+    </div>
+
+  `;
+}
+
+
+function showError(type) {
+
+  let title =
+    'VERIFICATION NOT FOUND';
+
+  let text =
+    '등록된 제품 정보를 확인할 수 없습니다.<br>' +
+    '시리얼번호를 다시 확인해 주세요.';
+
+
+  if (type === 'VOID') {
+
+    title =
+      'VERIFICATION UNAVAILABLE';
+
+    text =
+      '현재 유효하지 않은 시리얼번호입니다.<br>' +
+      '자세한 사항은 TKM으로 문의해 주세요.';
+  }
+
+
+  result.style.display = 'block';
+
+  result.innerHTML = `
+
+    <div class="error-card">
+
+      <div class="error-symbol">
+        —
+      </div>
+
+      <div class="error-title">
+        ${title}
+      </div>
+
+      <div class="error-text">
+        ${text}
+
+        <br><br>
+
+        info@tkm-global.com
+      </div>
+
+    </div>
+
+  `;
+}
+
+
+function verifySerial() {
+
+  const serial =
+    normalizeSerial(input.value);
+
+
+  if (!serial) {
+
+    result.style.display = 'block';
+
+    result.innerHTML = `
+
+      <div class="error-card">
+
+        <div class="error-title">
+          SERIAL NUMBER REQUIRED
+        </div>
+
+        <div class="error-text">
+          시리얼번호를 입력해 주세요.
+        </div>
+
+      </div>
+
+    `;
+
+    return;
+  }
+
+
+  showLoading();
+
+
+  const callbackName =
+    'tkmCallback_' + Date.now();
+
+
+  window[callbackName] =
+    function(data) {
+
+      resetButton();
+
+
+      if (
+        data &&
+        data.success === true
+      ) {
+
+        showSuccess(data);
+
+      } else {
+
+        showError(
+          data
+            ? data.message
+            : 'NOT_FOUND'
+        );
+      }
+
+
+      delete window[callbackName];
+
+
+      const script =
+        document.getElementById(
+          'tkmApiScript'
+        );
+
+      if (script) {
+        script.remove();
+      }
+    };
+
+
+  const script =
+    document.createElement('script');
+
+
+  script.id =
+    'tkmApiScript';
+
+
+  script.src =
+    API_URL +
+    '?serial=' +
+    encodeURIComponent(serial) +
+    '&callback=' +
+    encodeURIComponent(callbackName);
+
+
+  script.onerror =
+    function() {
+
+      resetButton();
+
+      result.style.display =
+        'block';
+
+      result.innerHTML = `
+
+        <div class="error-card">
+
+          <div class="error-title">
+            CONNECTION ERROR
+          </div>
+
+          <div class="error-text">
+            인증 서버에 연결할 수 없습니다.
+            <br>
+            잠시 후 다시 시도해 주세요.
+          </div>
+
+        </div>
+
+      `;
+
+      delete window[callbackName];
+    };
+
+
+  document.body.appendChild(script);
+}
+
+
+button.addEventListener(
+  'click',
+  verifySerial
+);
+
+
+input.addEventListener(
+  'keydown',
+  function(event) {
+
+    if (event.key === 'Enter') {
+      verifySerial();
+    }
+
+  }
+);
+
+</script>
 
 </body>
 </html>
